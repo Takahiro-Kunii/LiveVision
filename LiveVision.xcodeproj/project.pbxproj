@@ -14,8 +14,9 @@
 		386EE91C232DEA7D000CFDF0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 386EE91A232DEA7D000CFDF0 /* LaunchScreen.storyboard */; };
 		386EE925232DEAC5000CFDF0 /* LiveCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386EE923232DEAC4000CFDF0 /* LiveCameraView.swift */; };
 		386EE926232DEAC5000CFDF0 /* LiveCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386EE924232DEAC5000CFDF0 /* LiveCamera.swift */; };
-		386EE92A232DEBF9000CFDF0 /* MetadataReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386EE929232DEBF9000CFDF0 /* MetadataReader.swift */; };
 		386EE92E232DEE67000CFDF0 /* CirclePopLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386EE92D232DEE67000CFDF0 /* CirclePopLabel.swift */; };
+		386EE930232DF01B000CFDF0 /* BarcodeReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386EE92F232DF01B000CFDF0 /* BarcodeReader.swift */; };
+		386EE932232DF026000CFDF0 /* VideoFrameCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386EE931232DF026000CFDF0 /* VideoFrameCapture.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,8 +29,9 @@
 		386EE91D232DEA7D000CFDF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		386EE923232DEAC4000CFDF0 /* LiveCameraView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiveCameraView.swift; sourceTree = "<group>"; };
 		386EE924232DEAC5000CFDF0 /* LiveCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiveCamera.swift; sourceTree = "<group>"; };
-		386EE929232DEBF9000CFDF0 /* MetadataReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetadataReader.swift; sourceTree = "<group>"; };
 		386EE92D232DEE67000CFDF0 /* CirclePopLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CirclePopLabel.swift; sourceTree = "<group>"; };
+		386EE92F232DF01B000CFDF0 /* BarcodeReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarcodeReader.swift; sourceTree = "<group>"; };
+		386EE931232DF026000CFDF0 /* VideoFrameCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoFrameCapture.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,8 +68,9 @@
 				386EE913232DEA74000CFDF0 /* ViewController.swift */,
 				386EE924232DEAC5000CFDF0 /* LiveCamera.swift */,
 				386EE923232DEAC4000CFDF0 /* LiveCameraView.swift */,
-				386EE929232DEBF9000CFDF0 /* MetadataReader.swift */,
 				386EE92D232DEE67000CFDF0 /* CirclePopLabel.swift */,
+				386EE931232DF026000CFDF0 /* VideoFrameCapture.swift */,
+				386EE92F232DF01B000CFDF0 /* BarcodeReader.swift */,
 				386EE915232DEA74000CFDF0 /* Main.storyboard */,
 				386EE918232DEA7D000CFDF0 /* Assets.xcassets */,
 				386EE91A232DEA7D000CFDF0 /* LaunchScreen.storyboard */,
@@ -147,11 +150,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				386EE932232DF026000CFDF0 /* VideoFrameCapture.swift in Sources */,
 				386EE926232DEAC5000CFDF0 /* LiveCamera.swift in Sources */,
+				386EE930232DF01B000CFDF0 /* BarcodeReader.swift in Sources */,
 				386EE92E232DEE67000CFDF0 /* CirclePopLabel.swift in Sources */,
 				386EE914232DEA74000CFDF0 /* ViewController.swift in Sources */,
 				386EE912232DEA74000CFDF0 /* AppDelegate.swift in Sources */,
-				386EE92A232DEBF9000CFDF0 /* MetadataReader.swift in Sources */,
 				386EE925232DEAC5000CFDF0 /* LiveCameraView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

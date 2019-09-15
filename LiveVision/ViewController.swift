@@ -15,7 +15,7 @@ class ViewController: UIViewController {
     private var circlePopLabel = CirclePopLabel()
     
     private var liveCamera = LiveCamera()
-    private var barCodeReader = MetadataReader()
+    private var videoFrameCapture = VideoFrameCapture()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,11 +25,11 @@ class ViewController: UIViewController {
         liveCamera.delegate = self
         liveCamera.prepare()
         
-        liveCamera.add(output:barCodeReader.output) {
+        liveCamera.add(output:videoFrameCapture.output) {
             didAdd in
             if didAdd {
-                self.barCodeReader.delegate = self
-                self.barCodeReader.prepare()
+                self.videoFrameCapture.delegate = self
+                self.videoFrameCapture.prepare()
             }
         }
     }
@@ -53,27 +53,21 @@ class ViewController: UIViewController {
     }
 }
 
-// MARK: - MetadataReaderDelegate対応
-extension ViewController: MetadataReaderDelegate {
+// MARK: - VideoFrameCaptureDelegate対応
+extension ViewController: VideoFrameCaptureDelegate {
     
-    /// メタデータが認識された
-    ///
-    /// - Parameters:
-    ///   - reader: メタデータを認識したオブジェクト
-    ///   - codedata: メタデータ
-    func didRecognizeMetadata(reader: MetadataReader, codedata: AVMetadataMachineReadableCodeObject) {
-        guard let text = codedata.stringValue else {
-            //  メタデータに文字列がなかったので何もしない
-            return
-        }
-        DispatchQueue.main.async {
-            UIPasteboard.general.string = text      //  ペーストボードにコピーして別アプリでペーストできるようにする
-            if !self.circlePopLabel.isPopping {
-                self.circlePopLabel.pop(from:self.monitorView, text:text)
+    func videoFrameCapture(_ videoFrameCapture:VideoFrameCapture, cvPixelBuffer pixelBuffer:CVPixelBuffer) {
+        BarcodeReader.probe(cvPixelBuffer: pixelBuffer) {
+            code in
+            guard var text = code.payloadStringValue else { return }
+            text = "[\(code.symbology.rawValue)]\n" + text
+            DispatchQueue.main.async {
+                if !self.circlePopLabel.isPopping {
+                    self.circlePopLabel.pop(from:self.monitorView, text:text)
+                }
             }
         }
     }
-    
 }
 
 // MARK: - LiveCameraDelegate対応
