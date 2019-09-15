@@ -9,12 +9,27 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    
+    @IBOutlet var monitorView: LiveCameraView!
+    
+    private var liveCamera = LiveCamera()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        monitorView.session = liveCamera.session
+        liveCamera.prepare()
     }
-
-
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        liveCamera.start()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        liveCamera.stop()
+        super.viewWillDisappear(animated)
+    }
+    
 }
 

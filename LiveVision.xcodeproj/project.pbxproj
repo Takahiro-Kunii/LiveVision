@@ -12,6 +12,8 @@
 		386EE917232DEA74000CFDF0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 386EE915232DEA74000CFDF0 /* Main.storyboard */; };
 		386EE919232DEA7D000CFDF0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 386EE918232DEA7D000CFDF0 /* Assets.xcassets */; };
 		386EE91C232DEA7D000CFDF0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 386EE91A232DEA7D000CFDF0 /* LaunchScreen.storyboard */; };
+		386EE925232DEAC5000CFDF0 /* LiveCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386EE923232DEAC4000CFDF0 /* LiveCameraView.swift */; };
+		386EE926232DEAC5000CFDF0 /* LiveCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386EE924232DEAC5000CFDF0 /* LiveCamera.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +24,8 @@
 		386EE918232DEA7D000CFDF0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		386EE91B232DEA7D000CFDF0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		386EE91D232DEA7D000CFDF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		386EE923232DEAC4000CFDF0 /* LiveCameraView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiveCameraView.swift; sourceTree = "<group>"; };
+		386EE924232DEAC5000CFDF0 /* LiveCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiveCamera.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +60,8 @@
 			children = (
 				386EE911232DEA74000CFDF0 /* AppDelegate.swift */,
 				386EE913232DEA74000CFDF0 /* ViewController.swift */,
+				386EE924232DEAC5000CFDF0 /* LiveCamera.swift */,
+				386EE923232DEAC4000CFDF0 /* LiveCameraView.swift */,
 				386EE915232DEA74000CFDF0 /* Main.storyboard */,
 				386EE918232DEA7D000CFDF0 /* Assets.xcassets */,
 				386EE91A232DEA7D000CFDF0 /* LaunchScreen.storyboard */,
@@ -135,8 +141,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				386EE926232DEAC5000CFDF0 /* LiveCamera.swift in Sources */,
 				386EE914232DEA74000CFDF0 /* ViewController.swift in Sources */,
 				386EE912232DEA74000CFDF0 /* AppDelegate.swift in Sources */,
+				386EE925232DEAC5000CFDF0 /* LiveCameraView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
