@@ -17,6 +17,7 @@
 		386EE92E232DEE67000CFDF0 /* CirclePopLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386EE92D232DEE67000CFDF0 /* CirclePopLabel.swift */; };
 		386EE930232DF01B000CFDF0 /* BarcodeReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386EE92F232DF01B000CFDF0 /* BarcodeReader.swift */; };
 		386EE932232DF026000CFDF0 /* VideoFrameCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386EE931232DF026000CFDF0 /* VideoFrameCapture.swift */; };
+		386EE934232DF186000CFDF0 /* ImageFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386EE933232DF186000CFDF0 /* ImageFilter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		386EE92D232DEE67000CFDF0 /* CirclePopLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CirclePopLabel.swift; sourceTree = "<group>"; };
 		386EE92F232DF01B000CFDF0 /* BarcodeReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarcodeReader.swift; sourceTree = "<group>"; };
 		386EE931232DF026000CFDF0 /* VideoFrameCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoFrameCapture.swift; sourceTree = "<group>"; };
+		386EE933232DF186000CFDF0 /* ImageFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageFilter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +73,7 @@
 				386EE92D232DEE67000CFDF0 /* CirclePopLabel.swift */,
 				386EE931232DF026000CFDF0 /* VideoFrameCapture.swift */,
 				386EE92F232DF01B000CFDF0 /* BarcodeReader.swift */,
+				386EE933232DF186000CFDF0 /* ImageFilter.swift */,
 				386EE915232DEA74000CFDF0 /* Main.storyboard */,
 				386EE918232DEA7D000CFDF0 /* Assets.xcassets */,
 				386EE91A232DEA7D000CFDF0 /* LaunchScreen.storyboard */,
@@ -155,6 +158,7 @@
 				386EE930232DF01B000CFDF0 /* BarcodeReader.swift in Sources */,
 				386EE92E232DEE67000CFDF0 /* CirclePopLabel.swift in Sources */,
 				386EE914232DEA74000CFDF0 /* ViewController.swift in Sources */,
+				386EE934232DF186000CFDF0 /* ImageFilter.swift in Sources */,
 				386EE912232DEA74000CFDF0 /* AppDelegate.swift in Sources */,
 				386EE925232DEAC5000CFDF0 /* LiveCameraView.swift in Sources */,
 			);

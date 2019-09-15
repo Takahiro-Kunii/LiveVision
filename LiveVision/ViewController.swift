@@ -16,6 +16,8 @@ class ViewController: UIViewController {
     
     private var liveCamera = LiveCamera()
     private var videoFrameCapture = VideoFrameCapture()
+    private var filter = Filter.GaussianBlur()
+    private var ciContext = CIContext() //  毎回作るのは負荷が大きいのでここで作る
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,8 +34,21 @@ class ViewController: UIViewController {
                 self.videoFrameCapture.prepare()
             }
         }
+        
+        //  パンジェスチャーでブラーノかかり具合を変化させる
+        view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(pan(_:))))
     }
-
+    
+    /// パンジェスチャー中、画面中心からの指の位置を　0 - 1 の範囲に変換しfilterに設定する
+    ///
+    /// - Parameter gestureRecognizer: パンジェスチャー情報
+    @objc func pan(_ gestureRecognizer:UIPanGestureRecognizer) {
+        let translation = gestureRecognizer.location(in: view)
+        let x = abs(translation.x - view.bounds.midX) / (view.bounds.size.width / 2)
+        let y = abs(translation.y - view.bounds.midY) / (view.bounds.size.height / 2)
+        filter.set(ratio:Float(max(x, y)))
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         liveCamera.start()
@@ -49,6 +64,7 @@ class ViewController: UIViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         monitorView.syncOrientation()
+        videoFrameCapture.syncOrientation()
         circlePopLabel.hide()
     }
 }
@@ -57,13 +73,11 @@ class ViewController: UIViewController {
 extension ViewController: VideoFrameCaptureDelegate {
     
     func videoFrameCapture(_ videoFrameCapture:VideoFrameCapture, cvPixelBuffer pixelBuffer:CVPixelBuffer) {
-        BarcodeReader.probe(cvPixelBuffer: pixelBuffer) {
-            code in
-            guard var text = code.payloadStringValue else { return }
-            text = "[\(code.symbology.rawValue)]\n" + text
-            DispatchQueue.main.async {
-                if !self.circlePopLabel.isPopping {
-                    self.circlePopLabel.pop(from:self.monitorView, text:text)
+        let ciImage = CIImage(cvImageBuffer: pixelBuffer)
+        if let image = filter.make(from: ciImage) {
+            if let cgImage = ciContext.createCGImage(image, from: image.extent) {
+                DispatchQueue.main.async {
+                    self.view.layer.contents = cgImage
                 }
             }
         }
@@ -76,6 +90,7 @@ extension ViewController: LiveCameraDelegate {
         DispatchQueue.main.async {
             if sessionRunning {
                 self.monitorView.syncOrientation()
+                self.videoFrameCapture.syncOrientation()
             }
         }
     }
@@ -134,3 +149,17 @@ extension LiveCameraView {
     
 }
 
+// MARK: - VideoFrameCapture拡張
+extension VideoFrameCapture {
+    
+    /// 現在のiOSデバイスの縦位置・横位置に表示側も連動させる
+    func syncOrientation() {
+        guard let connection = output.connection(with: .video) else { return }
+        guard connection.isVideoOrientationSupported else { return }
+        var orientation = AVCaptureVideoOrientation.portrait
+        if let videoOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) {
+            orientation = videoOrientation
+        }
+        connection.videoOrientation = orientation
+    }
+}
