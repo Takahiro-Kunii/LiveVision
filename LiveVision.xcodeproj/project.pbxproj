@@ -30,6 +30,7 @@
 		386EE924232DEAC5000CFDF0 /* LiveCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiveCamera.swift; sourceTree = "<group>"; };
 		386EE929232DEBF9000CFDF0 /* MetadataReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetadataReader.swift; sourceTree = "<group>"; };
 		386EE92D232DEE67000CFDF0 /* CirclePopLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CirclePopLabel.swift; sourceTree = "<group>"; };
+		386EE935232DF419000CFDF0 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +47,7 @@
 		386EE905232DEA73000CFDF0 = {
 			isa = PBXGroup;
 			children = (
+				386EE935232DF419000CFDF0 /* README.md */,
 				386EE910232DEA73000CFDF0 /* LiveVision */,
 				386EE90F232DEA73000CFDF0 /* Products */,
 			);
