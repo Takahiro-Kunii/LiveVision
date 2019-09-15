@@ -7,7 +7,6 @@ AVCaptureSessionを使ったカメラからのライブ画像の取り込みと�
 |master|AVCaptureMetadataOutputを使ったバーコード読み取り|
 |use-vision|VisionフレームワークのVNBarcodeObservationを使ったバーコード読み取り|
 |filtering|use-visionの応用例。バーコード読み取りの代わりにCIFilterによる画像加工を行なっている|
-|barcode-vision-blur|use-visionとfilteringの合成|
 
 ## master
 AVCaptureSessionからの出力にAVCaptureMetadataOutputを指定し、バーコード検出を行なっている。
@@ -23,6 +22,3 @@ VNBarcodeObservationでは静止画像を使う、そのためAVCaptureVideoData
 ## filtering
 use-visionのAVCaptureVideoDataOutput応用例としてCoreImageフレームワークのCIFilterを使ったカメラライブ画像のリアルタイム加工。
 画面をドラッグする事で、中心部からの距離に応じてブラー量がリアルタイムに変わるようにしている。
-
-## barcode-vision-blur
-filteringで行なった画像加工とuse-visionでのバーコード検出を行なっている。画面ドラッグは廃止。
