@@ -53,9 +53,7 @@ class LiveCamera: NSObject {
             sessionQueue.suspend()
             AVCaptureDevice.requestAccess(for: .video, completionHandler: {
                 granted in
-                if !granted {
-                    self.condition = .notAuthorized
-                }
+                self.condition = granted ? .notConfigured : .notAuthorized
                 self.sessionQueue.resume()
             })
         default:
