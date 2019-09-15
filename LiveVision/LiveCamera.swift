@@ -10,6 +10,7 @@ import Foundation
 import AVFoundation
 
 class LiveCamera: NSObject {
+    weak var delegate:LiveCameraDelegate!
     ///  利用可能か不可（権限がない・設定で失敗）かを判断する
     ///
     /// - notAuthorized: 権限をもらえなかった
@@ -34,7 +35,8 @@ class LiveCamera: NSObject {
     private(set) var isRunning = false
     
     ///  現在構成されている画像取り込み用装置
-    private(set) var captureInputDevice:AVCaptureDeviceInput!
+    @objc dynamic private(set) var captureInputDevice:AVCaptureDeviceInput!
+    private var keyValueObservations = [NSKeyValueObservation]()
     
     /// 開始前に最低1回は呼び出す(くり返し呼んでもいいが、デバイスが設定されるのは一度だけ)
     /// 画像取り込み用として装置を使う権限があるか確認
@@ -58,6 +60,7 @@ class LiveCamera: NSObject {
             })
         default:
             condition = .notAuthorized
+            self.delegate?.liveCameraIsnotAvailable?(self)
         }
         
         /// 一度も設定されていないなら構成処理を実行
@@ -113,8 +116,10 @@ class LiveCamera: NSObject {
             //  ここに来た時点で.availableでないなら動作できない
             if self.condition != .available {
                 self.isRunning = false
+                self.delegate?.liveCameraFailed?(self)
                 return
             }
+            self.addObservers()
             self.session.startRunning()
             self.isRunning = self.session.isRunning     //  最終的に動作してるかどうかはここで確定
         }
@@ -127,6 +132,7 @@ class LiveCamera: NSObject {
         self.sessionQueue.async {
             self.session.stopRunning()
             self.isRunning = self.session.isRunning     //  最終的に停止してるかどうかはここで確定
+            self.removeObservers()
         }
     }
     
@@ -154,6 +160,133 @@ class LiveCamera: NSObject {
     }
 }
 
+// MARK: - 見張り機能
+extension LiveCamera {
+    
+    /// 装置の不具合や停止・再開通知のハンドラを用意し最低限の対応をする
+    /// KVOで以下の変化を見張る
+    ///     sessionのisRunning
+    ///     自身のcaptureInputDevice.device.systemPressureState
+    private func addObservers() {
+        let keyValueObservation = session.observe(\.isRunning, options: .new) { _, change in
+            guard let isSessionRunning = change.newValue else { return }
+            
+            //  動作状態をデリゲートに連絡
+            self.delegate?.liveCameraDidChange?(self, sessionRunning:isSessionRunning)
+        }
+        keyValueObservations.append(keyValueObservation)
+        
+        let systemPressureStateObservation = self.observe(\.captureInputDevice.device.systemPressureState, options: .new) { _, change in
+            guard let systemPressureState = change.newValue else { return }
+            self.setRecommendedFrameRateRangeForPressureState(systemPressureState: systemPressureState)
+        }
+        keyValueObservations.append(systemPressureStateObservation)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(sessionRuntimeError), name: .AVCaptureSessionRuntimeError, object: session)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(sessionWasInterrupted), name: .AVCaptureSessionWasInterrupted, object: session)
+        NotificationCenter.default.addObserver(self, selector: #selector(sessionInterruptionEnded), name: .AVCaptureSessionInterruptionEnded, object: session)
+    }
+    
+    /// 通知ハンドラ、KVO見張りの削除
+    private func removeObservers() {
+        NotificationCenter.default.removeObserver(self)
+        
+        for keyValueObservation in keyValueObservations {
+            keyValueObservation.invalidate()
+        }
+        keyValueObservations.removeAll()
+    }
+    
+    /// なんらかの不具合が生じた。不具合が復帰可能な場合再始動する
+    @objc func sessionRuntimeError(notification: NSNotification) {
+        guard let error = notification.userInfo?[AVCaptureSessionErrorKey] as? AVError else { return }
+        NSLog("Capture session runtime error: \(error)")
+        if error.code == .mediaServicesWereReset {
+            sessionQueue.async {
+                if self.isRunning {
+                    //  動作中だったなら再開させる
+                    self.session.startRunning()
+                    self.isRunning = self.session.isRunning
+                }
+            }
+        } else {
+            //  未対応
+        }
+    }
+    
+    /// ここでやっているのは一例　ビデオフレームレートを下げることで、取り込む処理のシステムへの圧迫を緩めている
+    private func setRecommendedFrameRateRangeForPressureState(systemPressureState: AVCaptureDevice.SystemPressureState) {
+        let pressureLevel = systemPressureState.level
+        if pressureLevel == .serious || pressureLevel == .critical {
+            NSLog("WARNING: Reached elevated system pressure level: \(pressureLevel). Throttling frame rate.")
+            reduceCaptureDeviceFrameRate()
+        } else if pressureLevel == .shutdown {
+            NSLog("Session stopped running due to shutdown system pressure level.")
+        }
+    }
+    
+    /// フレームレートを毎秒15-20に変更する
+    private func reduceCaptureDeviceFrameRate() {
+        guard let captureDevice = self.captureInputDevice?.device else { return }
+        do {
+            try captureDevice.lockForConfiguration()
+            captureDevice.activeVideoMinFrameDuration = CMTime(value: 1, timescale: 20)
+            captureDevice.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: 15)
+            captureDevice.unlockForConfiguration()
+        } catch {
+            NSLog("Could not lock device for configuration: \(error)")
+        }
+    }
+    
+    /// ユーザーがコントロールセンターで音楽を再生してしまった等で呼び出される。状況によっては再始動できる
+    @objc func sessionWasInterrupted(notification: NSNotification) {
+        guard let userInfoValue = notification.userInfo?[AVCaptureSessionInterruptionReasonKey] as AnyObject?,
+            let reasonIntegerValue = userInfoValue.integerValue,
+            let reason = AVCaptureSession.InterruptionReason(rawValue: reasonIntegerValue) else {
+                return
+        }
+        NSLog("Capture session was interrupted with reason \(reason)")
+        
+        if reason == .audioDeviceInUseByAnotherClient || reason == .videoDeviceInUseByAnotherClient {
+            //  取り返すことも可能
+            NSLog("audio/video device in use by another client.")
+        } else if reason == .videoDeviceNotAvailableWithMultipleForegroundApps {
+            NSLog("video device not available with multiple foreground apps.")
+        } else if reason == .videoDeviceNotAvailableDueToSystemPressure {
+            NSLog("Session stopped running due to shutdown system pressure level.")
+        }
+    }
+    
+    /// 割り込みが終わった
+    @objc func sessionInterruptionEnded(notification: NSNotification) {
+        NSLog("Capture session interruption ended")
+    }
+}
+
+// MARK: - LiveCamera用デリゲート定義
+@objc protocol LiveCameraDelegate : NSObjectProtocol {
+    
+    /// セッション状態の変化を連絡する
+    ///
+    /// - Parameters:
+    ///   - camera: 呼び出し元
+    ///   - sessionRunning: セッションの状態
+    @objc optional func liveCameraDidChange(_ camera:LiveCamera, sessionRunning:Bool)
+    
+    /// 権利確認で利用不可と返された時呼ばれる
+    ///
+    /// - Parameter camera: 呼び出し元
+    @objc optional func liveCameraIsnotAvailable(_ camera:LiveCamera)
+    
+    /// 失敗した時呼ばれる
+    ///
+    /// - Parameter camera: 呼び出し元
+    @objc optional func liveCameraFailed(_ camera:LiveCamera)
+}
+
+
+// MARK: - AVCaptureDeviceに独自のデフォルトデバイス選択機能と、各種設定機能を追加
 extension AVCaptureDevice {
     ///  未指定時の画像取り込み用装置を返す
     class var defaultCaptureDevice: AVCaptureDevice? {
