@@ -53,7 +53,9 @@ class LiveCamera: NSObject {
             sessionQueue.suspend()
             AVCaptureDevice.requestAccess(for: .video, completionHandler: {
                 granted in
-                self.condition = granted ? .notConfigured : .notAuthorized
+                if !granted {
+                    self.condition = .notAuthorized
+                }
                 self.sessionQueue.resume()
             })
         default:
@@ -127,6 +129,29 @@ class LiveCamera: NSObject {
         self.sessionQueue.async {
             self.session.stopRunning()
             self.isRunning = self.session.isRunning     //  最終的に停止してるかどうかはここで確定
+        }
+    }
+    
+    /// 出力装置を追加
+    ///
+    /// - Parameters:
+    ///   - output: 追加する出力装置
+    ///   - completeHandler: 追加できたかどうかをレポートする
+    ///     completeHandler(Bool)
+    ///     引数のBool値がtrueなら追加されたことを意味し、falseなら追加されなかったことを意味する
+    func add(output:AVCaptureOutput, completeHandler:((Bool)->Void)? = nil) {
+        self.sessionQueue.async {
+            if self.session.isRunning {
+                completeHandler?(false)
+                return
+            }
+            self.session.beginConfiguration()
+            let canAdd = self.session.canAddOutput(output)
+            if canAdd {
+                self.session.addOutput(output)
+            }
+            completeHandler?(canAdd)
+            self.session.commitConfiguration()
         }
     }
 }
